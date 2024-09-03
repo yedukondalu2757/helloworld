@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+     <head>
+          <meta charset="UTF-8">
+          <title>Restful Web Services</title>
+          <script src="js/angular.min.js"></script>
+          <link rel="stylesheet" href="css/dataTable.css"/>
+     </head>
+     <body>
+          <div ng-app="myapp">
+               <div ng-controller="JobsController">
+                    <h2>{{job.title}} !</h2>
+                    <input type="button" value="Get List" ng-click="GetJobsList()" />
+                    <hr />
+                    <p><input type="text" ng-model="search" placeholder="search"></p>
+                    <table border="1" cellpadding="5" cellspacing="20" ng-show="IsVisible">
+                         <tr>
+                              <th ng-click="orderByMe('jobId')">Job Id<img src="img/sort_both.png"/></th>
+                              <th ng-click="orderByMe('jobTitle')">Job Title<img src="img/sort_both.png"/></th>
+                              <th ng-click="orderByMe('experienceLevel')">Experience Level<img src="img/sort_both.png"/></th>
+                              <th ng-click="orderByMe('primarySkills')">Primary Skills<img src="img/sort_both.png"/></th>
+                              <th ng-click="orderByMe('currentStatus')">Current Status<img src="img/sort_both.png"/></th>
+                              <th ng-click="orderByMe('description')">Description<img src="img/sort_both.png"/></th>
+                              <th ng-click="orderByMe('postedDate')">Posted Date<img src="img/sort_both.png"/></th>
+                         </tr>
+                         <tbody>
+                              <tr ng-repeat="j in Jobs| orderBy:myOrderBy | filter:search">
+                                   <td><input type="button" ng-click="GetJobs('{{j.jobId}}')" value="{{j.jobId}}"></td>
+                                   <td>{{j.jobTitle}}</td>
+                                   <td>{{j.experienceLevel}}</td>
+                                   <td>{{j.primarySkills}}</td>
+                                   <td>{{j.currentStatus}}</td>
+                                   <td>{{j.description}}</td>
+                                   <td>{{j.postedDate}}</td>
+                              </tr>
+                         </tbody>
+                    </table>
+                    <hr/>
+               </div>
+               
+               <form action="rest/user/add" method="post">  
+                    Job Id:<input type="text" name="jobId"/><br/><br/>  
+                    Job Title:<input type="text" name="jobTitle"/><br/><br/>  
+                    Experience Level:<input type="text" name="experienceLevel"/><br/><br/>  
+                    Primary Skills:<input type="text" name="pskills"/><br/><br/>  
+                    Current Status:<input type="text" name="status"/><br/><br/>  
+                    Description:<input type="text" name="description"/><br/><br/>  
+                    <input type="submit" value="Add Job"/>  
+               </form> 
+
+
+               
+          </div>
+
+          <script>
+               angular.module("myapp", []).controller("JobsController",
+                       function ($scope, $http) {
+                       $scope.job = {};
+                       $scope.job.title = "Jobs List";
+                       $scope.Jobs = {};
+                       $scope.orderByMe = function(x) {
+                       $scope.myOrderBy = x;
+                       }
+                       $scope.GetJobsList = function () {
+                       $http({
+                       method: 'GET',
+                               url: 'http://localhost:8090/WebServices/rest/jobs/list'
+                       }).then(function successCallback(response) {
+                       $scope.Jobs = response.data;
+                       $scope.IsVisible = true;
+                       console.log(response.data);
+                       }, function errorCallback(response) {
+                       console.log(response.statusText);
+                       });
+                       };
+                       });
+
+          </script>
+     </body>
+</html>

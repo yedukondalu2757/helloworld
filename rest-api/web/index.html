@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+     <head>
+          <meta charset="UTF-8">
+          <title>Insert title here</title>
+          <script src="js/angular.min.js"></script>
+     </head>
+     <body>
+
+          <div ng-app="myapp">
+
+               <div ng-controller="HelloController">
+                    <h2>Hello {{helloTo.title}} !</h2>
+
+                    <input type="button" value="Generate Table"
+                           ng-click="GenerateTable()" />
+                    <hr />
+                    <table cellpadding="5" cellspacing="20" ng-show="IsVisible">
+                         <tr>
+                              <th>Customer Id</th>
+                              <th>Name</th>
+                              <th>Country</th>
+                              <th>State</th>
+                              <th>Village</th>
+                         </tr>
+                         <tbody ng-repeat="m in Customers">
+                              <tr>
+                                   <td>{{m.CustomerId}}</td>
+                                   <td>{{m.Name}}</td>
+                                   <td>{{m.Country}}</td>
+                                   <td>{{m.State}}</td>
+                                   <td>{{m.Village}}</td>
+                              </tr>
+                         </tbody>
+                    </table>
+                    <hr/>
+               </div>
+               
+<!--               <div ng-controller="CompaniesCtrl">
+                    <input type="button" value="Companies"
+                           ng-click="addRowAsyncAsJSON()" />
+               </div>-->
+               
+          </div>
+          
+          <script>
+               angular.module("myapp", []).controller("HelloController",
+                       function ($scope, $http) {
+                            $scope.helloTo = {};
+                            $scope.helloTo.title = "World, AngularJS";
+                            $scope.Customers = {};
+
+                            _refreshCountryData();
+
+                            function _refreshCountryData() {
+                                 $http({
+                                      method: 'GET',
+                                      url: 'http://localhost:8090/WebServices/rest/hello/authors'
+                                 }).then(function successCallback(response) {
+                                      $scope.Customers = response.data;
+                                      console.log(response.data);
+                                 }, function errorCallback(response) {
+                                      console.log(response.statusText);
+                                 });
+                            }
+
+                            // Customers
+                            $scope.GenerateTable = function () {
+                                 $scope.Customers = [{
+                                           CustomerId: 1,
+                                           Name: "Kondalu",
+                                           Country: "India",
+                                           State:"Andhra Pradesh",
+                                           Village:"Podili"
+                                      }, {
+                                           CustomerId: 2,
+                                           Name: "Ashok",
+                                           Country: "India",
+                                           State:"Andhra Pradesh",
+                                           Village:"Guntur"
+                                      }, {
+                                           CustomerId: 3,
+                                           Name: "Raja",
+                                           Country: "India",
+                                           State:"Andhra Pradesh",
+                                           Village:"Markapur"
+                                      }];
+                                 $scope.IsVisible = true;
+                            };
+
+                            $scope.GenerateTable1 = function () {
+                                 $http({
+                                      method: 'GET',
+                                      url: 'http://localhost:8090/WebServices/rest/hello/authors'
+                                 }).then(function successCallback(response) {
+                                      $scope.Customers = response.data;
+                                      $scope.IsVisible = true;
+                                      console.log(response.data);
+                                 }, function errorCallback(response) {
+                                      console.log(response.statusText);
+                                 });
+                            };
+
+                            $scope.GenerateTable2 = function () {
+                                 var dataObj = {
+                                      id: '4',
+                                      name: 'Vijay',
+                                      country: 'India - Podili'
+                                 };
+                                 var config = {
+                                      headers: {
+                                           'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                                      }
+                                 }
+                                 $http.post('http://localhost:8090/WebServices/rest/hello/authors/post', dataObj, config)
+                                         .success(function (data, status, headers, config) {
+                                              $scope.helloTo = data;
+                                         })
+                                         .error(function (data, status, headers, config) {
+                                              $scope.ResponseDetails = "Data: " + data +
+                                                      "<hr />status: " + status +
+                                                      "<hr />headers: " + headers +
+                                                      "<hr />config: " + config;
+                                         });
+                            };
+
+                       });
+                       
+                       
+                    var app = angular.module("myApp", []);
+                   app.controller("CompaniesCtrl", ['$scope', '$http', function($scope, $http) {
+	$scope.companies = [
+	                    { 'name':'Infosys Technologies', 'employees': 125000, 'headoffice': 'Bangalore'},
+	                    { 'name':'Cognizant Technologies', 'employees': 100000, 'headoffice': 'Bangalore'},
+		  { 'name':'Wipro', 'employees': 115000, 'headoffice': 'Bangalore'},
+                                       { 'name':'Tata Consultancy Services (TCS)', 'employees': 150000,'headoffice': 'Bangalore'},				                    	
+	                    ];
+	
+	$scope.addRowAsyncAsJSON = function(){		
+		$scope.companies.push({ 'name':$scope.name, 'employees': $scope.employees, 'headoffice':$scope.headoffice });
+				
+		var dataObj = {
+                                                       name : $scope.name,
+                                        	employees : $scope.employees,
+			headoffice : $scope.headoffice
+		};	
+		var res = $http.post('/savecompany_json', dataObj);
+		res.success(function(data, status, headers, config) {
+			$scope.message = data;
+		});
+		res.error(function(data, status, headers, config) {
+			alert( "failure message: " + JSON.stringify({data: data}));
+		});		
+		
+		$scope.name='';
+		$scope.employees='';
+		$scope.headoffice='';
+	};
+}]);
+          </script>
+     </body>
+</html>
