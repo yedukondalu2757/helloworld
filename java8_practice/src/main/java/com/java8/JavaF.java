@@ -12,5 +12,10 @@ public class JavaF {
 		Map<String, Long> map = Arrays.stream(name.split(""))
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 		System.out.println(map);
+
+        String name2 = "Jyothi";
+        Map<String, Long> map1 = Arrays.stream(name2.split(""))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        System.out.println(map1);
 	}
 }
